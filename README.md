@@ -16,4 +16,4 @@
 
 ## Project Deliverables:
 #### See the visualizations for this project [here](https://public.tableau.com/views/RockbusterWorkbook_17120892592020/Dashboard1?:language=en-US&:sid=&:display_count=n&:origin=viz_share_link).
-#### Access the final PowerPoint presentation here.
+#### Access the final PowerPoint presentation [here](https://github.com/p-dutcher/RockbusterSQL/blob/main/RockbusterStealthPresentation_Dutcher.pdf).
