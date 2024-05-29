@@ -1,0 +1,52 @@
+## The following SQL query utilizes common table expression (CTE) to create a temporary but reusable table in order to find the average amount paid by the top 5 customers.
+
+WITH avg_amount_paid_cte (customer_id,_first_name,last_name,city,country,amount_paid) AS 
+	(SELECT B.customer_id,
+	B.first_name,
+	B.last_name,
+	D.city,
+	E.country,
+	SUM(A.amount) as total_amount_paid
+FROM payment A
+INNER JOIN customer B on A.customer_id = B.customer_id
+INNER JOIN address C on B.address_id = C.address_id
+INNER JOIN city D on C.city_id = D.city_id
+INNER JOIN country E on D.country_id = E.country_id
+WHERE D.city IN ('Aurora','Acua','Citrus Heights','Iwaki','Ambattur','Shanwei',
+				 'So Leopoldo','Teboksary','Tianjin','Cianjur')
+GROUP BY B.customer_id,D.city,E.country
+ORDER BY SUM(A.amount) DESC
+LIMIT 5)
+SELECT AVG(amount_paid)
+FROM avg_amount_paid_cte
+
+## The following query utilizes CTE to return the top five countries, ordered by total customer count, as well as how many of the top 5 customers are located within each city.
+
+WITH total_amount_paid_cte (customer_id,first_name,last_name,city,country,amount_paid) AS
+(SELECT B.customer_id,
+	B.first_name,
+	B.last_name,
+	D.city,
+	E.country,
+	SUM(A.amount) as total_amount_paid
+FROM payment A
+INNER JOIN customer B on A.customer_id = B.customer_id
+INNER JOIN address C on B.address_id = C.address_id
+INNER JOIN city D on C.city_id = D.city_id
+INNER JOIN country E on D.country_id = E.country_id
+WHERE D.city IN ('Aurora','Acua','Citrus Heights','Iwaki','Ambattur','Shanwei',
+				 'So Leopoldo','Teboksary','Tianjin','Cianjur')
+GROUP BY B.customer_id,D.city,E.country
+ORDER BY SUM(A.amount) DESC
+LIMIT 5) 
+SELECT E.country,
+		COUNT(distinct B.customer_id) as all_customer_count,
+		COUNT(total_amount_paid_cte) as top_customer_count
+FROM customer B
+INNER JOIN address C on B.address_id = C.address_id
+INNER JOIN city D on C.city_id = D.city_id
+INNER JOIN country E on D.country_id = E.country_id
+LEFT JOIN total_amount_paid_cte ON B.customer_id = total_amount_paid_cte.customer_id
+GROUP BY e.country
+ORDER BY (all_customer_count) DESC
+LIMIT 5
